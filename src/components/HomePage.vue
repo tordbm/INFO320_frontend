@@ -1,7 +1,28 @@
 <template>
-  <button class="btn btn-light" @click="fetchData">Show Stats</button>
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a v-if="mode === 'OutletMap'" class="nav-link active">Sales Outlets</a>
+      <a v-else class="nav-link" @click="mode = 'OutletMap'">Sales Outlets</a>
+    </li>
+    <li class="nav-item">
+      <a v-if="mode === 'ShowStats'" class="nav-link active">Show Stats</a>
+      <a v-else class="nav-link" @click="mode = 'ShowStats'">Show Stats</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Link</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"
+        >Disabled</a
+      >
+    </li>
+  </ul>
   <ContentLoader v-if="loading" />
-  <div v-if="response && !loading">
+  <MapPage class="mt-3" v-if="mode === 'OutletMap'" />
+  <button v-if="mode === 'ShowStats'" class="btn btn-light" @click="fetchData">
+    Show Stats
+  </button>
+  <div v-if="response && !loading && mode === 'ShowStats'">
     <table class="table table-hover mt-2 center">
       <thead>
         <tr>
@@ -23,25 +44,28 @@
 import { defineComponent } from 'vue'
 import axios from 'axios'
 import ContentLoader from './ContentLoader.vue'
-
-const queryUrl = 'http://localhost:8080/sparql'
+import MapPage from './MapPage.vue'
+import { queryUrl } from '../shared/api'
 
 export default defineComponent({
   components: {
     ContentLoader,
+    MapPage,
   },
   data() {
     return {
       response: null as any,
       loading: false,
+      mode: 'OutletMap' as string,
     }
   },
   methods: {
     async fetchData() {
       this.loading = true
-      const response = await axios.get(queryUrl, {
-        params: {
-          query: `
+      const response = await axios
+        .get(queryUrl, {
+          params: {
+            query: `
             PREFIX : <http://example.org/ontology#Ontology#>
             PREFIX ex: <http://example.org/ontology#>
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -57,10 +81,11 @@ export default defineComponent({
             ?staff ex:last_name ?lastname .
             }
             LIMIT 50
-            
+
             `,
-        },
-      })
+          },
+        })
+        .finally()
       this.response = response
       this.loading = false
     },
