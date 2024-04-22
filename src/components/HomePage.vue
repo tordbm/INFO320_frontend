@@ -18,7 +18,11 @@
     </li>
   </ul>
   <ContentLoader v-if="loading" />
-  <MapPage class="mt-3" v-if="mode === 'OutletMap'" />
+  <MapPage
+    v-if="mode === 'OutletMap'"
+    :locations="locations"
+    :information="information"
+    class="mt-3" />
   <button v-if="mode === 'ShowStats'" class="btn btn-light" @click="fetchData">
     Show Stats
   </button>
@@ -57,15 +61,53 @@ export default defineComponent({
       response: null as any,
       loading: false,
       mode: 'OutletMap' as string,
+      locations: [] as any[],
+      information: [] as any[],
     }
+  },
+  async mounted() {
+    this.loading = true
+    const response = await axios.get(queryUrl, {
+      params: {
+        query: `
+            PREFIX : <http://example.org/ontology#Ontology#>
+            PREFIX ex: <http://example.org/ontology#>
+            PREFIX owl: <http://www.w3.org/2002/07/owl#>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+            PREFIX obda: <https://w3id.org/obda/vocabulary#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+            SELECT ?store ?lat ?long ?address ?storeType
+            WHERE {
+                ?store rdf:type ex:SalesOutlet;
+                    ex:store_latitude ?lat;
+                    ex:store_longitude ?long;
+                    ex:store_address ?address;
+                    ex:store_type ?storeType .
+            }
+            `,
+      },
+    })
+    response.data.results.bindings.forEach((item) => {
+      this.information.push({
+        address: item.address.value,
+        storeType: item.storeType.value,
+      })
+      this.locations.push({
+        lat: parseFloat(item.lat.value),
+        lng: parseFloat(item.long.value),
+      })
+    })
+    this.loading = false
   },
   methods: {
     async fetchData() {
       this.loading = true
-      const response = await axios
-        .get(queryUrl, {
-          params: {
-            query: `
+      const response = await axios.get(queryUrl, {
+        params: {
+          query: `
             PREFIX : <http://example.org/ontology#Ontology#>
             PREFIX ex: <http://example.org/ontology#>
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -83,14 +125,18 @@ export default defineComponent({
             LIMIT 50
 
             `,
-          },
-        })
-        .finally()
+        },
+      })
       this.response = response
       this.loading = false
     },
     parseURI(uri: string): string {
-      return '' + uri.match(/[^/]*$/)
+      const matchResult = uri.match(/[^/]*$/)
+      if (matchResult) {
+        return matchResult[0]
+      } else {
+        return ''
+      }
     },
   },
 })
