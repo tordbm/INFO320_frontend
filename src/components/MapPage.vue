@@ -9,7 +9,15 @@
         v-for="(location, i) in locations"
         :key="i"
         :options="{ position: location }">
-        <InfoWindow> Hello </InfoWindow>
+        <InfoWindow>
+          <h6>
+            {{ information[i].storeType }}
+          </h6>
+          <div>
+            {{ information[i].address }}
+          </div>
+          <a class="link" href="#"> See metrics </a>
+        </InfoWindow>
       </Marker>
     </MarkerCluster>
   </GoogleMap>
@@ -31,8 +39,8 @@ export default defineComponent({
     return {
       apiKey: MAPS_API_KEY,
       center: { lat: 40.7352225, lng: -73.9135952 },
-      locations: [],
-      information: [],
+      locations: [] as any[],
+      information: [] as any[],
     }
   },
   async mounted() {
@@ -48,23 +56,33 @@ export default defineComponent({
             PREFIX obda: <https://w3id.org/obda/vocabulary#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-            SELECT ?store ?lat ?long
+            SELECT ?store ?lat ?long ?address ?storeType
             WHERE {
                 ?store rdf:type ex:SalesOutlet;
                     ex:store_latitude ?lat;
-                    ex:store_longitude ?long .
+                    ex:store_longitude ?long;
+                    ex:store_address ?address;
+                    ex:store_type ?storeType .
             }
             `,
       },
     })
     response.data.results.bindings.forEach((item) => {
-      this.information.push({})
+      this.information.push({
+        address: item.address.value,
+        storeType: item.storeType.value,
+      })
       this.locations.push({
         lat: parseFloat(item.lat.value),
         lng: parseFloat(item.long.value),
       })
     })
-    console.log(this.locations)
   },
 })
 </script>
+
+<style scoped lang="scss">
+h6::first-letter {
+  text-transform: capitalize;
+}
+</style>
