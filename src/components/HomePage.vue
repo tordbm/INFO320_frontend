@@ -18,12 +18,13 @@
     </li>
   </ul>
   <ContentLoader v-if="loading" />
-  <MapPage
+  <!-- DISABLE WHEN NOT NEEDED CUZ $$$-->
+  <!-- <MapPage
     v-if="mode === 'OutletMap'"
     :loading="loading"
     :locations="locations"
     :information="information"
-    class="mt-3" />
+    class="mt-3" /> -->
   <button v-if="mode === 'ShowStats'" class="btn btn-light" @click="fetchData">
     Show Stats
   </button>

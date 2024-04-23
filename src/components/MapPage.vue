@@ -4,7 +4,7 @@
     style="width: 100%; height: 500px"
     :center="center"
     :zoom="12">
-    <template v-if="locations.length > 0 && !loading">
+    <div v-if="!loading">
       <MarkerCluster>
         <Marker
           v-for="(location, i) in locations"
@@ -17,7 +17,7 @@
           </InfoWindow>
         </Marker>
       </MarkerCluster>
-    </template>
+    </div>
   </GoogleMap>
 </template>
 
