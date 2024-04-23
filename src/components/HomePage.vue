@@ -46,10 +46,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import axios from 'axios'
 import ContentLoader from './ContentLoader.vue'
 import MapPage from './MapPage.vue'
-import { queryUrl } from '../shared/api'
+import { fetchExampleData, fetchStoreLocations } from '../shared/api'
 
 export default defineComponent({
   components: {
@@ -67,30 +66,8 @@ export default defineComponent({
   },
   async mounted() {
     this.loading = true
-    const response = await axios.get(queryUrl, {
-      params: {
-        query: `
-            PREFIX : <http://example.org/ontology#Ontology#>
-            PREFIX ex: <http://example.org/ontology#>
-            PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-            PREFIX xml: <http://www.w3.org/XML/1998/namespace>
-            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-            PREFIX obda: <https://w3id.org/obda/vocabulary#>
-            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-            SELECT ?store ?lat ?long ?address ?storeType
-            WHERE {
-                ?store rdf:type ex:SalesOutlet;
-                    ex:store_latitude ?lat;
-                    ex:store_longitude ?long;
-                    ex:store_address ?address;
-                    ex:store_type ?storeType .
-            }
-            `,
-      },
-    })
-    response.data.results.bindings.forEach((item) => {
+    const response = await fetchStoreLocations()
+    response.results.bindings.forEach((item) => {
       this.information.push({
         address: item.address.value,
         storeType: item.storeType.value,
@@ -105,28 +82,7 @@ export default defineComponent({
   methods: {
     async fetchData() {
       this.loading = true
-      const response = await axios.get(queryUrl, {
-        params: {
-          query: `
-            PREFIX : <http://example.org/ontology#Ontology#>
-            PREFIX ex: <http://example.org/ontology#>
-            PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-            PREFIX xml: <http://www.w3.org/XML/1998/namespace>
-            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-            PREFIX obda: <https://w3id.org/obda/vocabulary#>
-            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-            SELECT ?staff ?lastname
-            WHERE {
-            ?staff rdf:type ex:Staff .
-            ?staff ex:last_name ?lastname .
-            }
-            LIMIT 50
-
-            `,
-        },
-      })
+      const response = await fetchExampleData()
       this.response = response
       this.loading = false
     },
