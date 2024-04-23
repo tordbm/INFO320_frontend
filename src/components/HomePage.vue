@@ -19,7 +19,7 @@
   </ul>
   <ContentLoader v-if="loading" />
   <MapPage
-    v-if="mode === 'OutletMap'"
+    v-if="mode === 'OutletMap' && !loading"
     :locations="locations"
     :information="information"
     class="mt-3" />
