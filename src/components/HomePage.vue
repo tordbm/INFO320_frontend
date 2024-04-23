@@ -19,7 +19,8 @@
   </ul>
   <ContentLoader v-if="loading" />
   <MapPage
-    v-if="mode === 'OutletMap' && !loading"
+    v-if="mode === 'OutletMap'"
+    :loading="loading"
     :locations="locations"
     :information="information"
     class="mt-3" />
@@ -87,12 +88,11 @@ export default defineComponent({
       this.loading = false
     },
     parseURI(uri: string): string {
-      const matchResult = uri.match(/[^/]*$/)
+      const matchResult = uri.match(/#([^#]*)$/)
       if (matchResult) {
-        return matchResult[0]
-      } else {
-        return ''
+        return matchResult[1]
       }
+      return ''
     },
   },
 })

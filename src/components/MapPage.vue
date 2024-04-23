@@ -4,7 +4,7 @@
     style="width: 100%; height: 500px"
     :center="center"
     :zoom="12">
-    <template v-if="locations.length > 0">
+    <template v-if="locations.length > 0 && !loading">
       <MarkerCluster>
         <Marker
           v-for="(location, i) in locations"
@@ -30,6 +30,7 @@ export default defineComponent({
   props: {
     locations: { type: Array<any>, required: true },
     information: { type: Array<any>, required: true },
+    loading: { type: Boolean, required: true },
   },
   components: {
     GoogleMap,
