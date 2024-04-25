@@ -5,30 +5,26 @@
       <a v-else class="nav-link" @click="mode = 'OutletMap'">Sales Outlets</a>
     </li>
     <li class="nav-item">
-      <a v-if="mode === 'ShowStats'" class="nav-link active">Show Stats</a>
-      <a v-else class="nav-link" @click="mode = 'ShowStats'">Show Stats</a>
+      <a v-if="mode === 'ShowTable'" class="nav-link active">Show Table</a>
+      <a v-else class="nav-link" @click="mode = 'ShowTable'">Show Table</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">Link</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"
-        >Disabled</a
-      >
+      <a v-if="mode === 'OutletStats'" class="nav-link active">Outlet Stats</a>
+      <a v-else class="nav-link" @click="mode = 'OutletStats'">Outlet Stats</a>
     </li>
   </ul>
   <ContentLoader v-if="loading" />
   <!-- DISABLE WHEN NOT NEEDED CUZ $$$-->
-  <!-- <MapPage
+  <MapPage
     v-if="mode === 'OutletMap'"
     :loading="loading"
     :locations="locations"
     :information="information"
-    class="mt-3" /> -->
-  <button v-if="mode === 'ShowStats'" class="btn btn-light" @click="fetchData">
+    class="mt-3" />
+  <button v-if="mode === 'ShowTable'" class="btn btn-light" @click="fetchData">
     Show Stats
   </button>
-  <div v-if="response && !loading && mode === 'ShowStats'">
+  <div v-if="response && !loading && mode === 'ShowTable'">
     <table class="table table-hover mt-2 center">
       <thead>
         <tr>
@@ -44,18 +40,24 @@
       </tbody>
     </table>
   </div>
+  <div v-if="!loading && mode === 'OutletStats'">
+    <ChartOverview :outlet-id="outletId" class="mt-2" />
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ContentLoader from './ContentLoader.vue'
 import MapPage from './MapPage.vue'
+import ChartOverview from './ChartOverview.vue'
 import { fetchExampleData, fetchStoreLocations } from '../shared/api'
+import { parseURI } from '../shared/utils'
 
 export default defineComponent({
   components: {
     ContentLoader,
     MapPage,
+    ChartOverview,
   },
   data() {
     return {
@@ -64,6 +66,7 @@ export default defineComponent({
       mode: 'OutletMap' as string,
       locations: [] as any[],
       information: [] as any[],
+      outletId: '3' as string,
     }
   },
   async mounted() {
@@ -88,13 +91,7 @@ export default defineComponent({
       this.response = response
       this.loading = false
     },
-    parseURI(uri: string): string {
-      const matchResult = uri.match(/#([^#]*)$/)
-      if (matchResult) {
-        return matchResult[1]
-      }
-      return ''
-    },
+    parseURI,
   },
 })
 </script>

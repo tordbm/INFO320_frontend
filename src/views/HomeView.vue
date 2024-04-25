@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-center">
-          <h1>Here is our super awesome page</h1>
+          <h1>Coffee Shop Ontology ☕️</h1>
           <HomePage />
         </div>
       </div>

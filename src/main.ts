@@ -3,6 +3,28 @@ import 'bootstrap/dist/js/bootstrap.js'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  BarElement,
+} from 'chart.js'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 const app = createApp(App)
 
