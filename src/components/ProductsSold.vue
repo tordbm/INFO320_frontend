@@ -1,14 +1,14 @@
 <template>
-  <Line :data="chartData" :options="chartOptions" />
+  <Bar :data="chartData" :options="chartOptions" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Line } from 'vue-chartjs'
+import { Bar } from 'vue-chartjs'
 
 export default defineComponent({
   components: {
-    Line,
+    Bar,
   },
   props: {
     productsSold: { type: Object, required: true },
@@ -24,12 +24,9 @@ export default defineComponent({
         labels: this.labels,
         datasets: [
           {
-            label: 'Products Sold in April',
+            label: 'Products Sold',
             data: this.productData,
-            backgroundColor: 'blue',
-            borderColor: 'blue',
-            tension: 0.4,
-            pointRadius: 0,
+            backgroundColor: 'skyblue',
           },
         ],
       }
@@ -45,6 +42,7 @@ export default defineComponent({
           },
           y: {
             grace: '100%',
+            beginAtZero: true,
             grid: {
               display: true,
             },
@@ -57,30 +55,30 @@ export default defineComponent({
       }
     },
     labels(): Array<string> {
-      const dateMap = {}
-      this.productsSold.forEach((item) => {
-        const date = item.transactionDate.value
-        const quantity = parseInt(item.quantitySold.value)
-
-        if (dateMap[date] === undefined) {
-          dateMap[date] = 0
-        }
-        dateMap[date] += quantity
-      })
-      return [...Object.keys(dateMap).sort()]
+      const dateMap = this.createDateMap()
+      return [...Object.keys(dateMap)]
     },
     productData(): Array<any> {
+      const dateMap = this.createDateMap()
+      return [...Object.values(dateMap)]
+    },
+  },
+  methods: {
+    createDateMap() {
       const dateMap = {}
       this.productsSold.forEach((item) => {
-        const date = item.transactionDate.value
+        const date = new Date(item.transactionDate.value)
+        date.setHours(date.getHours() + 2)
+        const dateString = date.toISOString().split('T')[0]
         const quantity = parseInt(item.quantitySold.value)
 
-        if (dateMap[date] === undefined) {
-          dateMap[date] = 0
+        if (dateMap[dateString] === undefined) {
+          dateMap[dateString] = 0
         }
-        dateMap[date] += quantity
+
+        dateMap[dateString] += quantity
       })
-      return [...Object.values(dateMap)]
+      return dateMap
     },
   },
 })

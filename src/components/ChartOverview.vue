@@ -1,6 +1,6 @@
 <template>
   <ContentLoader v-if="loading" />
-  <div class="conatiner">
+  <div class="conatiner mt-2">
     <ProductsSold v-if="!loading" :products-sold="productsSold" />
   </div>
 </template>
@@ -11,6 +11,7 @@ import { fetchProductsSold } from '../shared/api'
 import ContentLoader from './ContentLoader.vue'
 
 export default defineComponent({
+  emits: ['reset-outlet'],
   components: {
     ProductsSold,
     ContentLoader,
@@ -27,7 +28,8 @@ export default defineComponent({
   async mounted() {
     this.loading = true
     const response = await fetchProductsSold(this.outletId)
-    this.productsSold = response.data.results.bindings
+    this.productsSold = response
+    this.$emit('reset-outlet')
     this.loading = false
   },
 })

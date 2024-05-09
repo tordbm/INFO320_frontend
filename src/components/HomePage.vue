@@ -16,10 +16,11 @@
   <ContentLoader v-if="loading" />
   <!-- DISABLE WHEN NOT NEEDED CUZ $$$-->
   <MapPage
-    v-if="mode === 'OutletMap'"
+    v-if="mode === 'OutletMap' && !loading"
     :loading="loading"
     :locations="locations"
     :information="information"
+    @metrics="seeStoreMetrics"
     class="mt-3" />
   <button v-if="mode === 'ShowTable'" class="btn btn-light" @click="fetchData">
     Show Stats
@@ -41,7 +42,7 @@
     </table>
   </div>
   <div v-if="!loading && mode === 'OutletStats'">
-    <ChartOverview :outlet-id="outletId" class="mt-2" />
+    <ChartOverview :outlet-id="outletId" @reset-outlet="outletId = '*'" />
   </div>
 </template>
 
@@ -66,7 +67,7 @@ export default defineComponent({
       mode: 'OutletMap' as string,
       locations: [] as any[],
       information: [] as any[],
-      outletId: '3' as string,
+      outletId: '*' as string,
     }
   },
   async mounted() {
@@ -76,6 +77,7 @@ export default defineComponent({
       this.information.push({
         address: item.address.value,
         storeType: item.storeType.value,
+        storeId: item.store.value.slice(-1),
       })
       this.locations.push({
         lat: parseFloat(item.lat.value),
@@ -90,6 +92,10 @@ export default defineComponent({
       const response = await fetchExampleData()
       this.response = response
       this.loading = false
+    },
+    seeStoreMetrics(outletId: string) {
+      this.outletId = outletId
+      this.mode = 'OutletStats'
     },
     parseURI,
   },

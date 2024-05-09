@@ -13,7 +13,12 @@
           <InfoWindow v-if="information.length > 0 && information[i]">
             <h6>{{ information[i].storeType }}</h6>
             <div>{{ information[i].address }}</div>
-            <a class="link" href="#"> See metrics </a>
+            <a
+              class="link"
+              href="#"
+              @click="() => $emit('metrics', information[i].storeId)">
+              See metrics
+            </a>
           </InfoWindow>
         </Marker>
       </MarkerCluster>

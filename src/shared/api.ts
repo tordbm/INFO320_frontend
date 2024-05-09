@@ -4,8 +4,7 @@ export const MAPS_API_KEY = 'AIzaSyDBA5mvMSp45SeYw-ARj-7hxJR3MRMkqb0'
 
 const sparqlEndpoint = 'http://localhost:8080/sparql'
 const PREFIX = `
-              PREFIX : <http://example.org/ontology#Ontology#>
-              PREFIX ex: <http://example.org/ontology#>
+              PREFIX : <http://example.org/ontology#>
               PREFIX owl: <http://www.w3.org/2002/07/owl#>
               PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
               PREFIX xml: <http://www.w3.org/XML/1998/namespace>
@@ -22,11 +21,11 @@ export async function fetchStoreLocations() {
 
               SELECT ?store ?lat ?long ?address ?storeType
               WHERE {
-                  ?store rdf:type ex:SalesOutlet;
-                      ex:store_latitude ?lat;
-                      ex:store_longitude ?long;
-                      ex:store_address ?address;
-                      ex:store_type ?storeType .
+                  ?store rdf:type :SalesOutlet;
+                      :store_latitude ?lat;
+                      :store_longitude ?long;
+                      :store_address ?address;
+                      :store_type ?storeType .
               }
               `,
     },
@@ -42,8 +41,7 @@ export async function fetchExampleData() {
 
             SELECT ?staff ?lastname
             WHERE {
-            ?staff rdf:type ex:Staff .
-            ?staff ex:last_name ?lastname .
+            ?staff :last_name ?lastname .
             }
             LIMIT 50
 
@@ -54,6 +52,8 @@ export async function fetchExampleData() {
 }
 
 export async function fetchProductsSold(outletId: string) {
+  const filter = outletId === '*' ? '' : `FILTER (?salesOutletId = ${outletId})`
+
   const response = await axios.get(sparqlEndpoint, {
     params: {
       query: `
@@ -61,17 +61,15 @@ export async function fetchProductsSold(outletId: string) {
 
             SELECT ?quantitySold ?transactionDate ?salesOutletId
                 WHERE {
-                  ?pastryInventory rdf:type ex:PastryInventory;
-                                  ex:transaction_date ?transactionDate;
-                                  ex:quantity_sold ?quantitySold;
-                  ex:sales_outlet_id ?salesOutletId .
+                  ?pastryInventory rdf:type :PastryInventory;
+                                  :transaction_date ?transactionDate;
+                                  :quantity_sold ?quantitySold;
+                                  :sales_outlet_id ?salesOutletId .
                   
-                  FILTER (?transactionDate >= "4/1/2019" && 
-                          ?transactionDate <= "4/27/2019" &&
-                          ?salesOutletId = ${outletId})
+                  ${filter}
                 }
             `,
     },
   })
-  return response
+  return response.data.results.bindings
 }
