@@ -33,7 +33,6 @@ export default defineComponent({
     },
     chartOptions() {
       return {
-        /*  aspectRatio: 2, */
         scales: {
           x: {
             grid: {
@@ -55,13 +54,14 @@ export default defineComponent({
       }
     },
     labels(): Array<string> {
-      const dateMap = this.createDateMap()
-      return [...Object.keys(dateMap)]
+      return [...Object.keys(this.dataMap)]
     },
     productData(): Array<any> {
-      const dateMap = this.createDateMap()
-      return [...Object.values(dateMap)]
+      return [...Object.values(this.dataMap)]
     },
+  },
+  mounted() {
+    this.dataMap = this.createDateMap()
   },
   methods: {
     createDateMap() {
