@@ -60,15 +60,15 @@ export async function fetchProductsSold(outletId: string) {
             ${PREFIX}
 
             SELECT ?quantitySold ?transactionDate ?salesOutletId
-                WHERE {
-                  ?pastryInventory rdf:type :PastryInventory;
-                                  :transaction_date ?transactionDate;
-                                  :quantity_sold ?quantitySold;
-                                  :sales_outlet_id ?salesOutletId .
-                  
-                  ${filter}
-                }
-            `,
+            WHERE {
+              ?pastryInventory rdf:type :PastryInventory;
+                              :transaction_date ?transactionDate;
+                              :quantity_sold ?quantitySold;
+                              :sales_outlet_id ?salesOutletId .
+            
+                ${filter}
+              }
+          `,
     },
   })
   return response.data.results.bindings

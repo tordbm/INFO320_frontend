@@ -42,7 +42,10 @@
     </table>
   </div>
   <div v-if="!loading && mode === 'OutletStats'">
-    <ChartOverview :outlet-id="outletId" @reset-outlet="outletId = '*'" />
+    <ChartOverview
+      :outlet-id="outletId"
+      :information="information"
+      @reset-outlet="outletId = '*'" />
   </div>
 </template>
 
@@ -73,17 +76,25 @@ export default defineComponent({
   async mounted() {
     this.loading = true
     const response = await fetchStoreLocations()
-    response.results.bindings.forEach((item) => {
-      this.information.push({
-        address: item.address.value,
-        storeType: item.storeType.value,
-        storeId: item.store.value.slice(-1),
-      })
-      this.locations.push({
-        lat: parseFloat(item.lat.value),
-        lng: parseFloat(item.long.value),
-      })
-    })
+    response.results.bindings.forEach(
+      (item: {
+        address: { value: any }
+        storeType: { value: any }
+        store: { value: string }
+        lat: { value: string }
+        long: { value: string }
+      }) => {
+        this.information.push({
+          address: item.address.value,
+          storeType: item.storeType.value,
+          storeId: parseURI(item.store.value),
+        })
+        this.locations.push({
+          lat: parseFloat(item.lat.value),
+          lng: parseFloat(item.long.value),
+        })
+      }
+    )
     this.loading = false
   },
   methods: {

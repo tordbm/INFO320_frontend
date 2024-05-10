@@ -66,18 +66,23 @@ export default defineComponent({
   methods: {
     createDateMap() {
       const dateMap = {}
-      this.productsSold.forEach((item) => {
-        const date = new Date(item.transactionDate.value)
-        date.setHours(date.getHours() + 2)
-        const dateString = date.toISOString().split('T')[0]
-        const quantity = parseInt(item.quantitySold.value)
+      this.productsSold.forEach(
+        (item: {
+          transactionDate: { value: string | number | Date }
+          quantitySold: { value: string }
+        }) => {
+          const date = new Date(item.transactionDate.value)
+          date.setHours(date.getHours() + 2)
+          const dateString = date.toISOString().split('T')[0]
+          const quantity = parseInt(item.quantitySold.value)
 
-        if (dateMap[dateString] === undefined) {
-          dateMap[dateString] = 0
+          if (dateMap[dateString] === undefined) {
+            dateMap[dateString] = 0
+          }
+
+          dateMap[dateString] += quantity
         }
-
-        dateMap[dateString] += quantity
-      })
+      )
       return dateMap
     },
   },
