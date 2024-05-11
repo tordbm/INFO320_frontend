@@ -1,32 +1,34 @@
 <template>
   <ContentLoader v-if="loading" />
+  <select
+    v-model="salesOutletId"
+    class="form-select mt-2"
+    aria-label="store-select"
+    :disabled="loading">
+    <option :value="'*'">Show All</option>
+    <option v-for="options in information" :value="options.storeId">
+      {{ options.storeType + ': ' + options.address }}
+    </option>
+  </select>
+
+  <div
+    v-if="pastriesSold.length === 0 && beveragesSold.length === 0 && !loading"
+    class="alert alert-warning mt-2"
+    role="alert">
+    No data found for selected store
+  </div>
+
   <div class="row">
     <div class="col">
-      <select
-        v-model="salesOutletId"
-        class="form-select mt-2"
-        aria-label="store-select"
-        :disabled="loading">
-        <option :value="'*'">Show All</option>
-        <option v-for="options in information" :value="options.storeId">
-          {{ options.address }}
-        </option>
-      </select>
-      <div class="container mt-2">
-        <PastriesSoldChart v-if="!loading" :pastries-sold="pastriesSold" />
-        <PastriesDoughnutChart
-          class="mt-2"
-          v-if="!loading"
-          :pastries-sold="pastriesSold" />
+      <div v-if="pastriesSold.length > 0 && !loading" class="container mt-2">
+        <PastriesSoldChart :pastries-sold="pastriesSold" />
+        <PastriesDoughnutChart class="mt-2" :pastries-sold="pastriesSold" />
       </div>
     </div>
     <div class="col">
-      <div class="container mt-5">
-        <BeveragesSoldChart v-if="!loading" :beverages-sold="beveragesSold" />
-        <BeveragesDoughnutChart
-          class="mt-2"
-          v-if="!loading"
-          :beverages-sold="beveragesSold" />
+      <div v-if="beveragesSold.length > 0 && !loading" class="container mt-2">
+        <BeveragesSoldChart :beverages-sold="beveragesSold" />
+        <BeveragesDoughnutChart class="mt-2" :beverages-sold="beveragesSold" />
       </div>
     </div>
   </div>
