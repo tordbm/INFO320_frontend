@@ -1,7 +1,6 @@
 <template>
   <Bar :data="chartData" :options="chartOptions" />
 </template>
-
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Bar } from 'vue-chartjs'
@@ -11,7 +10,7 @@ export default defineComponent({
     Bar,
   },
   props: {
-    productsSold: { type: Object, required: true },
+    pastriesSold: { type: Object, required: true },
   },
   data() {
     return {
@@ -24,7 +23,7 @@ export default defineComponent({
         labels: this.labels,
         datasets: [
           {
-            label: 'Products Sold',
+            label: 'Quantity',
             data: this.productData,
             backgroundColor: 'skyblue',
           },
@@ -33,6 +32,12 @@ export default defineComponent({
     },
     chartOptions() {
       return {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Pastries Sold',
+          },
+        },
         scales: {
           x: {
             grid: {
@@ -66,23 +71,18 @@ export default defineComponent({
   methods: {
     createDateMap() {
       const dateMap = {}
-      this.productsSold.forEach(
-        (item: {
-          transactionDate: { value: string | number | Date }
-          quantitySold: { value: string }
-        }) => {
-          const date = new Date(item.transactionDate.value)
-          date.setHours(date.getHours() + 2)
-          const dateString = date.toISOString().split('T')[0]
-          const quantity = parseInt(item.quantitySold.value)
+      this.pastriesSold.forEach((item) => {
+        const date = new Date(item.transactionDate.value)
+        date.setHours(date.getHours() + 2)
+        const dateString = date.toISOString().split('T')[0]
+        const quantity = parseInt(item.quantitySold.value)
 
-          if (dateMap[dateString] === undefined) {
-            dateMap[dateString] = 0
-          }
-
-          dateMap[dateString] += quantity
+        if (dateMap[dateString] === undefined) {
+          dateMap[dateString] = 0
         }
-      )
+
+        dateMap[dateString] += quantity
+      })
       return dateMap
     },
   },

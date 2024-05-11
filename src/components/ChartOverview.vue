@@ -7,28 +7,46 @@
         class="form-select mt-2"
         aria-label="store-select"
         :disabled="loading">
+        <option :value="'*'">Show All</option>
         <option v-for="options in information" :value="options.storeId">
           {{ options.address }}
         </option>
       </select>
       <div class="container mt-2">
-        <ProductsSold v-if="!loading" :products-sold="productsSold" />
+        <PastriesSoldChart v-if="!loading" :pastries-sold="pastriesSold" />
+        <PastriesDoughnutChart
+          class="mt-2"
+          v-if="!loading"
+          :pastries-sold="pastriesSold" />
       </div>
     </div>
-    <div class="col"></div>
-    Hello
+    <div class="col">
+      <div class="container mt-5">
+        <BeveragesSoldChart v-if="!loading" :beverages-sold="beveragesSold" />
+        <BeveragesDoughnutChart
+          class="mt-2"
+          v-if="!loading"
+          :beverages-sold="beveragesSold" />
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ProductsSold from './ProductsSold.vue'
-import { fetchProductsSold } from '../shared/api'
+import PastriesSoldChart from './PastriesSoldChart.vue'
+import { fetchBeveragesSold, fetchPastriesSold } from '../shared/api'
 import ContentLoader from './ContentLoader.vue'
+import PastriesDoughnutChart from './PastriesDoughnutChart.vue'
+import BeveragesSoldChart from './BeveragesSoldChart.vue'
+import BeveragesDoughnutChart from './BeveragesDoughnutChart.vue'
 
 export default defineComponent({
   emits: ['reset-outlet'],
   components: {
-    ProductsSold,
+    PastriesSoldChart,
+    PastriesDoughnutChart,
+    BeveragesSoldChart,
+    BeveragesDoughnutChart,
     ContentLoader,
   },
   props: {
@@ -37,13 +55,14 @@ export default defineComponent({
   },
   data() {
     return {
-      productsSold: [] as any[],
+      pastriesSold: [] as any[],
+      beveragesSold: [] as any[],
       loading: false,
       salesOutletId: this.outletId,
     }
   },
   watch: {
-    async salesOutletId(newVal) {
+    async salesOutletId() {
       this.loading = true
       await this.fetchProducts()
       this.loading = false
@@ -57,8 +76,10 @@ export default defineComponent({
   },
   methods: {
     async fetchProducts() {
-      const response = await fetchProductsSold(this.salesOutletId)
-      this.productsSold = response
+      const responsePastries = await fetchPastriesSold(this.salesOutletId)
+      const responseBeverages = await fetchBeveragesSold(this.salesOutletId)
+      this.pastriesSold = responsePastries
+      this.beveragesSold = responseBeverages
     },
   },
 })

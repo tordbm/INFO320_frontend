@@ -51,7 +51,7 @@ export async function fetchExampleData() {
   return response
 }
 
-export async function fetchProductsSold(outletId: string) {
+export async function fetchPastriesSold(outletId: string) {
   const filter = outletId === '*' ? '' : `FILTER (?salesOutletId = ${outletId})`
 
   const response = await axios.get(sparqlEndpoint, {
@@ -59,15 +59,51 @@ export async function fetchProductsSold(outletId: string) {
       query: `
             ${PREFIX}
 
-            SELECT ?quantitySold ?transactionDate ?salesOutletId
+            SELECT ?quantitySold ?transactionDate ?salesOutletId ?productId ?productName
             WHERE {
               ?pastryInventory rdf:type :PastryInventory;
                               :transaction_date ?transactionDate;
                               :quantity_sold ?quantitySold;
-                              :sales_outlet_id ?salesOutletId .
+                              :sales_outlet_id ?salesOutletId;
+                              :productPartOf ?productId .
+              
+              ?productId :product ?productName .
             
                 ${filter}
               }
+          `,
+    },
+  })
+  return response.data.results.bindings
+}
+
+export async function fetchBeveragesSold(outletId: string) {
+  const filter =
+    outletId === '*'
+      ? ''
+      : `
+      BIND(STRAFTER(STR(?salesOutletId), "http://example.org/ontology#SalesOutlet/") AS ?salesOutletIdValue)
+      FILTER (?salesOutletIdValue = \"${outletId}")
+      `
+
+  const response = await axios.get(sparqlEndpoint, {
+    params: {
+      query: `
+            ${PREFIX}
+
+            SELECT ?quantitySold ?transactionDate ?salesOutletId ?productId ?productType
+            WHERE {
+              ?reciept rdf:type :Reciept;
+                              :transaction_date ?transactionDate;
+                              :quantity ?quantitySold;
+                              :salesOutletAppearsOn ?salesOutletId;
+                              :productAppearsOn ?productId .
+              
+              ?productId :product_type ?productType .
+            
+                ${filter}
+              }
+              ORDER BY ?transactionDate
           `,
     },
   })
