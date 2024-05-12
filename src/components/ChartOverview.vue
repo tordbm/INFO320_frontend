@@ -1,16 +1,5 @@
 <template>
   <ContentLoader v-if="loading" />
-  <select
-    v-model="salesOutletId"
-    class="form-select mt-2"
-    aria-label="store-select"
-    :disabled="loading">
-    <option :value="'*'">Show All</option>
-    <option v-for="options in information" :value="options.storeId">
-      {{ options.storeType + ': ' + options.address }}
-    </option>
-  </select>
-
   <div
     v-if="pastriesSold.length === 0 && beveragesSold.length === 0 && !loading"
     class="alert alert-warning mt-2"
@@ -20,12 +9,28 @@
 
   <div class="row">
     <div class="col">
+      <select
+        v-model="salesOutletId"
+        class="form-select mt-2"
+        aria-label="store-select"
+        :disabled="loading">
+        <option :value="'*'">Show All</option>
+        <option v-for="options in information" :value="options.storeId">
+          {{ options.storeType + ': ' + options.address }}
+        </option>
+      </select>
       <div v-if="pastriesSold.length > 0 && !loading" class="container mt-2">
         <PastriesSoldChart :pastries-sold="pastriesSold" />
         <PastriesDoughnutChart class="mt-2" :pastries-sold="pastriesSold" />
       </div>
     </div>
     <div class="col">
+      <select
+        class="form-select mt-2"
+        aria-label="month-select"
+        :disabled="loading">
+        <option :value="'04'">April</option>
+      </select>
       <div v-if="beveragesSold.length > 0 && !loading" class="container mt-2">
         <BeveragesSoldChart :beverages-sold="beveragesSold" />
         <BeveragesDoughnutChart class="mt-2" :beverages-sold="beveragesSold" />
