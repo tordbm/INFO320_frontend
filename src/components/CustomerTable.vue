@@ -1,7 +1,6 @@
 <template>
-  <h5 class="mt-2 position-center">Our Most Loyal Customers</h5>
   <ContentLoader v-if="loading" />
-  <table class="table table-hover mt-2 center">
+  <table class="table table-hover mt-4 center">
     <thead>
       <tr>
         <th>Name</th>

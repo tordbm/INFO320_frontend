@@ -5,8 +5,12 @@
       <a v-else class="nav-link" @click="mode = 'OutletMap'">Sales Outlets</a>
     </li>
     <li class="nav-item">
-      <a v-if="mode === 'ShowTable'" class="nav-link active">Show Table</a>
-      <a v-else class="nav-link" @click="mode = 'ShowTable'">Show Table</a>
+      <a v-if="mode === 'LoyaltyTable'" class="nav-link active"
+        >Loyal Customers</a
+      >
+      <a v-else class="nav-link" @click="mode = 'LoyaltyTable'"
+        >Loyal Customers</a
+      >
     </li>
     <li class="nav-item">
       <a v-if="mode === 'OutletStats'" class="nav-link active">Outlet Stats</a>
@@ -14,7 +18,6 @@
     </li>
   </ul>
   <ContentLoader v-if="loading" />
-  <!-- DISABLE WHEN NOT NEEDED CUZ $$$-->
   <MapPage
     v-if="mode === 'OutletMap' && !loading"
     :loading="loading"
@@ -22,7 +25,7 @@
     :information="information"
     @metrics="seeStoreMetrics"
     class="mt-3" />
-  <CustomerTable v-if="mode === 'ShowTable' && !loading" />
+  <CustomerTable v-if="mode === 'LoyaltyTable' && !loading" />
   <div v-if="!loading && mode === 'OutletStats'">
     <ChartOverview
       :outlet-id="outletId"
