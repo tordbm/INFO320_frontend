@@ -31,7 +31,6 @@ export default defineComponent({
       }
     },
     colors() {
-      console.log(this.labels.length)
       return [
         'rgb(255, 99, 132)', // Red
         'rgb(54, 162, 235)', // Blue

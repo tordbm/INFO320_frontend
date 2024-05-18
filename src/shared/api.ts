@@ -33,22 +33,31 @@ export async function fetchStoreLocations() {
   return response.data
 }
 
-export async function fetchExampleData() {
+export async function fetchCustomerData() {
   const response = await axios.get(sparqlEndpoint, {
     params: {
       query: `
             ${PREFIX}
 
-            SELECT ?staff ?lastname
+            SELECT ?loyalty ?email ?name (SUM(?quantity) AS ?total_quantity)
             WHERE {
-            ?staff :last_name ?lastname .
+              ?reciept a :Reciept;
+                      :customerAppearsOn ?customer;
+                      :quantity ?quantity .
+              
+              ?customer a :Customer;
+                :customer_first_name ?name;
+                :loyalty_card_number ?loyalty;
+                :customer_email ?email .
+              
             }
-            LIMIT 50
-
+            GROUP BY ?name ?loyalty ?email
+            ORDER BY DESC (?total_quantity)
+            LIMIT 100
             `,
     },
   })
-  return response
+  return response.data.results.bindings
 }
 
 export async function fetchPastriesSold(outletId: string) {
