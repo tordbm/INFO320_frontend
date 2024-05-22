@@ -1,4 +1,5 @@
 # INFO320_frontend
+Related repo: <a>https://github.com/tordbm/INFO320_Project</a>
 
 ## Project Setup
 
